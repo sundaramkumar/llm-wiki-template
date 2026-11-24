@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Wiki Template</title>
+<meta name="description" content="How to use the LLM wiki template on any codebase, existing or new.">
+<style>
+:root{--bg:#f7f6f3;--surface:#fff;--text:#1d1d1b;--muted:#5f5e5a;--line:#e3e1db;--accent:#1f5f99;--accent-bg:#e7eff7;
+  --code-bg:#f1efe9;--warn-bg:#fdf3e1;--warn:#8a5a00;--green:#2f6b3a;--green-bg:#e8f3ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--surface:#1f1f1d;--text:#ecebe7;--muted:#a4a29c;
+  --line:#34332f;--accent:#7fb2e5;--accent-bg:#1c2a38;--code-bg:#2a2a27;--warn-bg:#2f2614;--warn:#e3a948;--green:#8cc68c;--green-bg:#18291b}}
+:root[data-theme="dark"]{--bg:#161615;--surface:#1f1f1d;--text:#ecebe7;--muted:#a4a29c;--line:#34332f;--accent:#7fb2e5;
+  --accent-bg:#1c2a38;--code-bg:#2a2a27;--warn-bg:#2f2614;--warn:#e3a948;--green:#8cc68c;--green-bg:#18291b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1140px;margin:0 auto;padding:28px 16px 80px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:40px}
+@media (max-width:840px){.wrap{grid-template-columns:1fr}.toc{position:static!important}}
+.toc{position:sticky;top:20px;align-self:start;font-size:14px}
+.toc a{display:block;padding:4px 10px;border-radius:6px;color:var(--muted);text-decoration:none}
+.toc a:hover{background:var(--accent-bg);color:var(--accent)}
+.toc .lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:0 10px 6px}
+h1{font-size:30px;margin:4px 0 6px}
+.lead{color:var(--muted);margin:0 0 18px;max-width:720px;font-size:16px}
+h2{font-size:22px;margin:46px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:16px;margin:22px 0 6px}
+p,li{max-width:770px}
+a{color:var(--accent)}
+code{font:13px ui-monospace,Menlo,monospace;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:8px;overflow-x:auto;font:13px/1.5 ui-monospace,Menlo,monospace;margin:8px 0 14px;max-width:770px}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;background:var(--surface);border:1px solid var(--line);font-size:14px;margin:8px 0 16px;display:block;overflow-x:auto;width:max-content;max-width:100%}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:block}
+a.card:hover{border-color:var(--accent)}
+.card b{display:block;font-size:16px;margin-bottom:4px}
+.card span{font-size:14px;color:var(--muted)}
+.card.hl{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.tag{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);margin-bottom:4px}
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+@media (max-width:720px){.paths{grid-template-columns:1fr}}
+.path{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.path h3{margin-top:0}
+.steps{counter-reset:s;list-style:none;padding:0;margin:8px 0}
+.steps > li{counter-increment:s;position:relative;padding:0 0 12px 38px}
+.steps > li::before{content:counter(s);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--bg);
+  font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.note{background:var(--accent-bg);border-left:3px solid var(--accent);padding:10px 14px;border-radius:6px;margin:12px 0;max-width:770px}
+.warn{background:var(--warn-bg);border-left:3px solid var(--warn);padding:10px 14px;border-radius:6px;margin:12px 0;max-width:770px}
+.ok{background:var(--green-bg);border-left:3px solid var(--green);padding:10px 14px;border-radius:6px;margin:12px 0;max-width:770px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0;max-width:770px}
+summary{cursor:pointer;font-weight:600}
+.tree{font:13px/1.55 ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <div class="lbl">LLM wiki template</div>
+  <a href="#what">What you get</a>
+  <a href="#choose">Choose your path</a>
+  <a href="#existing">Existing project</a>
+  <a href="#new">New project</a>
+  <a href="#stacks">Any tech stack</a>
+  <a href="#layouts">Repo layouts</a>
+  <a href="#claude">Working with Claude</a>
+  <a href="#upkeep">Keeping it current</a>
+  <a href="#cost">Time and cost</a>
+  <a href="#files">Files in this template</a>
+  <a href="#faq">FAQ</a>
+</nav>
+<main>
+<h1>LLM wiki template</h1>
+<p class="lead">A developer wiki that Claude Code writes from your code and keeps up to date. It works with any language
+or framework, for a codebase you already have or one you're just starting. This page explains how to set it up.</p>
+
+<div class="cards">
+  <a class="card hl" href="examples/site/index.html"><span class="tag">See the result first</span><b>Example wiki →</b>
+    <span>"Acme Shop", a made-up project with four repos in four stacks: the home page, guide, system map, risk register and graph.</span></a>
+  <a class="card" href="#existing"><span class="tag">Code already exists</span><b>Existing project →</b>
+    <span>Document a codebase that's live or in development, including legacy code.</span></a>
+  <a class="card" href="#new"><span class="tag">Little or no code yet</span><b>New project →</b>
+    <span>Start the wiki with the code, and let it grow with each feature.</span></a>
+</div>
+
+<h2 id="what">What you get</h2>
+<p>For each project, a separate private git repo (the "wiki repo") next to the code repos, containing:</p>
+<table>
+<tr><th>Part</th><th>What it is</th></tr>
+<tr><td><b>Wiki pages</b> (<code>wiki/</code>)</td><td>Markdown pages on flows, modules, architecture, decisions and incidents. Every claim cites the code as <code>repo:path → symbol</code>.</td></tr>
+<tr><td><b>System map</b></td><td>One diagram of the whole system, plus a numbered sequence diagram at the top of each main flow page.</td></tr>
+<tr><td><b>Risk register</b></td><td>Every possible bug Claude noticed while reading the code, rated by severity, filterable and exportable to CSV.</td></tr>
+<tr><td><b>Freshness tracking</b></td><td>Each page records which commit it was checked against. A script lists the pages that new commits affect.</td></tr>
+<tr><td><b>A small site</b> (<code>site/</code>)</td><td>A home page, a guide for your developers, the system map, the risk register and a page graph. Plain HTML, no server.</td></tr>
+<tr><td><b>Slash commands</b></td><td><code>/wiki-init</code>, <code>/wiki-build</code>, <code>/wiki-sync</code>, <code>/wiki-ask</code>, <code>/wiki-lint</code> in Claude Code.</td></tr>
+</table>
+<p>The wiki explains what the code can't say on its own: paths that cross files and repos, why things are built that way,
+business rules and gotchas. The code stays the source of truth.</p>
+
+<h2 id="choose">Choose your path</h2>
+<div class="paths">
+  <div class="path">
+    <h3>Existing project</h3>
+    <p>The code is there: a live product, a legacy system or a project mid-way. Claude reads it all, writes a catalog of
+    every module, then builds the pages that matter most.</p>
+    <p><a href="#existing">Steps for an existing project ↓</a></p>
+  </div>
+  <div class="path">
+    <h3>New project</h3>
+    <p>The stack is chosen and the first code is coming. Start the wiki now with the system map and the decisions, and add a
+    page as each feature is merged.</p>
+    <p><a href="#new">Steps for a new project ↓</a></p>
+  </div>
+</div>
+<p>Both need: <b>git</b>, <b>Node.js 18+</b> (for the scripts, whatever your project's language), and <b>Claude Code</b>.</p>
+
+<h2 id="existing">Existing project</h2>
+<ol class="steps">
+  <li><b>Put the repos side by side.</b> Clone every repo of the project into one folder and check out the branch the team
+  works on (often <code>main</code> or <code>dev</code>).
+<pre class="tree">~/Projects/Acme/
+├── acme-api/
+├── acme-web/
+└── acme-mobile/</pre></li>
+  <li><b>Copy the template next to them</b> as <code>&lt;project&gt;-wiki</code>:
+<pre><code>cp -R ~/Projects/Personal/llm-wiki-template ~/Projects/Acme/acme-wiki
+cd ~/Projects/Acme/acme-wiki
+git init</code></pre>
+  Or, once the template is on GitHub as a template repo:
+  <code>gh repo create &lt;org&gt;/acme-wiki --private --template &lt;org&gt;/llm-wiki-template --clone</code></li>
+  <li><b>Run <code>/wiki-init</code></b> in Claude Code inside the wiki folder. It:
+    <ul>
+      <li>asks which sibling folders belong to the project and gives each a short prefix (<code>api</code>, <code>web</code>…);</li>
+      <li>reads only the manifests and folder layout to detect each stack, and picks a profile;</li>
+      <li><b>stops for you to confirm</b> the repos, stacks and profile;</li>
+      <li>fills in the rules, including the <b>never-read list</b> (env files, keys, logs, dumps, customer data);</li>
+      <li>writes the module catalog and the system map;</li>
+      <li>proposes a page plan with a cost estimate, and <b>stops again</b>;</li>
+      <li>builds two pilot pages for you to check, then builds <code>site/</code>.</li>
+    </ul></li>
+  <li><b>Check the pilots.</b> Open <code>site/index.html</code>. Read the two pages against the code. If the depth or style is
+  wrong, say so now; it's cheaper than after 50 pages.</li>
+  <li><b>Build the rest of the plan</b> with <code>/wiki-build &lt;flow or module&gt;</code>. Main flows first (the journeys the
+  business depends on, and where incidents happen), then one architecture page per app, then the modules with real logic.
+  Pages that don't overlap can be built in parallel by subagents.</li>
+  <li><b>Push the wiki to a private repo</b>, and add a short "Developer wiki" section to each code repo's
+  <code>CLAUDE.md</code> (the text is in the template README). From then on, Claude reads the wiki while coding in those repos.</li>
+  <li><b>Triage the risk register</b> with the team. Adjust severities in <code>risks.json</code>; expect more risks in older code.</li>
+</ol>
+<h3>Things specific to existing projects</h3>
+<table>
+<tr><th>Situation</th><th>What to do</th></tr>
+<tr><td>Docs already in the repos (<code>README</code>, <code>docs/</code>, ADRs)</td><td>Nothing to copy: pages cite them in place (<code>api:docs/ARCHITECTURE.md</code>). Old docs that disagree with the code get a note.</td></tr>
+<tr><td>Docs outside git (Confluence, Google Docs, PDFs, QA reports)</td><td>Convert to markdown and put them in <code>wiki/raw/</code>. Claude reads them as evidence but never edits them. Remove secrets and customer data first.</td></tr>
+<tr><td>Code repos already have a <code>CLAUDE.md</code></td><td>Add the "Developer wiki" section to the end; keep the rest.</td></tr>
+<tr><td>Large legacy system (hundreds of modules)</td><td>Use the <code>monolith</code> profile. The catalog groups modules by area. Build the 5–10 flows people ask about most; skip modules nobody touches.</td></tr>
+<tr><td>Secrets committed in the repos</td><td>Add those files to the never-read list during <code>/wiki-init</code>. Rotate them separately; the wiki won't fix that.</td></tr>
+<tr><td>Dead code</td><td>The catalog marks modules that look unused, so nobody writes pages for them.</td></tr>
+</table>
+
+<h2 id="new">New project</h2>
+<ol class="steps">
+  <li><b>Start once there's a skeleton</b>: the first repo exists and the framework is chosen. <code>/wiki-init</code> works
+  with very little code; the catalog will just be short.</li>
+  <li><b>Copy the template and run <code>/wiki-init</code></b>, exactly as for an existing project (steps 1–3 above).</li>
+  <li><b>Write the decisions early.</b> New projects make most of their big choices in the first weeks: the stack, how
+  tenants or users are separated, where money is handled. Ask Claude to record each one as a page in
+  <code>wiki/decisions/</code>, with context and consequences. Put design documents in <code>wiki/raw/</code>.</li>
+  <li><b>Draw the system map for the plan</b>, and mark the parts not built yet with <code>&gt; Unverified: planned</code>.
+  Remove the note when the code lands.</li>
+  <li><b>Add the code-repo pointer from day one</b>, so Claude uses the wiki while writing the code.</li>
+  <li><b>Grow it with each feature.</b> When a feature is merged, run <code>/wiki-build &lt;the feature's flow&gt;</code>. Run
+  <code>/wiki-sync</code> weekly for everything else.</li>
+</ol>
+<div class="ok">A wiki that starts with the code stays small and accurate, and never needs a big catch-up build.</div>
+
+<h2 id="stacks">Any tech stack</h2>
+<p>The scripts only read markdown and run <code>git diff</code>, so they don't care what language the code is in. Claude
+reads the code itself. Two files adapt the wiki to your project:</p>
+<h3>1. Profiles: the type of project</h3>
+<table>
+<tr><th>Profile</th><th>For</th><th>Main folders</th></tr>
+<tr><td><code>web-app</code></td><td>SaaS, web apps, APIs</td><td><code>flows/</code>, <code>modules/</code>, <code>architecture/</code></td></tr>
+<tr><td><code>mobile-app</code></td><td>Flutter, React Native, native iOS / Android</td><td><code>screens/</code>, <code>flows/</code>, <code>platform/</code>, <code>releases/</code></td></tr>
+<tr><td><code>data-pipeline</code></td><td>dbt, Airflow, ETL, analytics</td><td><code>pipelines/</code>, <code>datasets/</code>, <code>jobs/</code>, <code>data-quality/</code></td></tr>
+<tr><td><code>infrastructure</code></td><td>Terraform, Kubernetes, CI/CD</td><td><code>environments/</code>, <code>services/</code>, <code>runbooks/</code></td></tr>
+<tr><td><code>library</code></td><td>SDKs, shared packages</td><td><code>api/</code>, <code>concepts/</code>, <code>extension-points/</code></td></tr>
+<tr><td><code>monolith</code></td><td>ERP, CRM, large legacy systems</td><td><code>domains/</code>, <code>flows/</code>, <code>batch-jobs/</code>, <code>integrations/</code></td></tr>
+</table>
+<p>A project can mix types: pick the main one and borrow folders from another. <code>/wiki-init</code> suggests one.</p>
+<h3>2. <code>profiles/stacks.md</code>: the framework</h3>
+<p>For each framework it says what counts as one "module" in the catalog, and which files must never be read. Some examples:</p>
+<table>
+<tr><th>Stack</th><th>One catalog row per</th><th>Never read (besides <code>.env*</code>, keys, logs)</th></tr>
+<tr><td>Node / NestJS / Express</td><td>Folder under <code>src/modules/</code> or a NestJS module</td><td><code>.npmrc</code> with tokens</td></tr>
+<tr><td>React / Next.js / Vue / Angular</td><td>Route or feature folder</td><td>—</td></tr>
+<tr><td>Java / Kotlin (Spring Boot)</td><td>Package under the main package</td><td><code>application-prod.yml</code></td></tr>
+<tr><td>.NET</td><td>Project in the solution</td><td><code>appsettings.*.json</code> with connection strings</td></tr>
+<tr><td>Python (Django / FastAPI)</td><td>Django app, or router package</td><td><code>local_settings.py</code>, <code>instance/</code></td></tr>
+<tr><td>Go</td><td>Package under <code>internal/</code> or <code>pkg/</code></td><td>—</td></tr>
+<tr><td>PHP (Laravel) / Rails</td><td>Domain folder or controller group</td><td><code>storage/logs/</code>, <code>config/master.key</code></td></tr>
+<tr><td>Flutter / React Native</td><td>Feature folder</td><td><code>google-services.json</code>, keystores</td></tr>
+<tr><td>Frappe / ERPNext</td><td>Module, and each DocType</td><td><code>sites/*/site_config.json</code></td></tr>
+<tr><td>dbt / Airflow</td><td>Model folder or DAG</td><td>—</td></tr>
+<tr><td>Terraform / Kubernetes</td><td>Module or environment root, chart</td><td><code>*.tfstate</code>, <code>kubeconfig*</code></td></tr>
+</table>
+<p>The full list has more stacks. If yours is missing, <code>/wiki-init</code> still works: it reads the layout and asks you
+what a module is. Add the answer to <code>stacks.md</code> in the template so the next project gets it.</p>
+
+<h2 id="layouts">Repo layouts</h2>
+<table>
+<tr><th>Layout</th><th>How the wiki handles it</th></tr>
+<tr><td><b>Several repos</b> (API, web, mobile…)</td><td>One wiki for all of them. Each repo gets a prefix; flow pages follow a request across repos.</td></tr>
+<tr><td><b>Monorepo</b></td><td>One repo, one prefix. The catalog groups modules by app or package.</td></tr>
+<tr><td><b>Single small repo</b></td><td>Works the same; the wiki is just smaller. Consider whether the README is enough.</td></tr>
+<tr><td><b>Mixed stacks</b></td><td>Fine: each repo is detected separately. The <a href="examples/site/index.html">example</a> mixes Next.js, NestJS, Python and Terraform.</td></tr>
+</table>
+<p>The wiki must sit <b>next to</b> the code repos (paths in <code>repos.json</code> are relative, like <code>../acme-api</code>),
+so every developer clones them the same way.</p>
+
+<h2 id="claude">Working with Claude</h2>
+<h3>In the wiki folder</h3>
+<table>
+<tr><th>Command</th><th>When</th></tr>
+<tr><td><code>/wiki-init</code></td><td>Once, to set up a new project's wiki</td></tr>
+<tr><td><code>/wiki-build &lt;flow or module&gt;</code></td><td>A flow or module has no page yet. Example: <code>/wiki-build password reset</code></td></tr>
+<tr><td><code>/wiki-sync</code></td><td>The code has new commits. Updates only the affected pages, then rebuilds <code>site/</code></td></tr>
+<tr><td><code>/wiki-ask &lt;question&gt;</code></td><td>Any question. Answers from the wiki, confirms in the code, offers to save the answer</td></tr>
+<tr><td><code>/wiki-lint</code></td><td>Health check: broken citations, stale pages, contradictions, fixed risks</td></tr>
+</table>
+<h3>In a code repo</h3>
+<p>With the "Developer wiki" section in the repo's <code>CLAUDE.md</code>, Claude reads the matching wiki page before changing
+or explaining code, and checks it against the code. It doesn't edit the wiki from there; it tells you which page a change
+affects.</p>
+<h3>Other coding agents</h3>
+<p><code>AGENTS.md</code> points other coding agents that read that file to the same rules in <code>CLAUDE.md</code>.
+The slash commands are Claude Code only, but they're plain markdown you can paste as prompts.</p>
+<p>Each project's wiki also gets its own <b>guide page</b> (<code>site/guide.html</code>) written for that project's developers,
+with its repos and commands. See the <a href="examples/site/guide.html">example guide</a>.</p>
+
+<h2 id="upkeep">Keeping it current</h2>
+<ol class="steps">
+  <li>Weekly: pull the code repos and run <code>node scripts/wiki-status.mjs</code>. If it says up to date, stop.</li>
+  <li>Run <code>/wiki-sync</code> in Claude Code. It re-checks only pages that cite changed files.</li>
+  <li>Review the diff, especially new risks and their ratings in <code>risks.json</code>. Commit and push.</li>
+</ol>
+<table>
+<tr><th>Script (no Claude needed)</th><th>What it does</th></tr>
+<tr><td><code>node scripts/wiki-status.mjs</code></td><td>New commits per repo, and the pages they affect</td></tr>
+<tr><td><code>node scripts/wiki-lint.mjs</code></td><td>Every citation exists, links work, every page is indexed, stale pages</td></tr>
+<tr><td><code>node scripts/build-site.mjs</code></td><td>Rebuild everything in <code>site/</code></td></tr>
+</table>
+
+<h2 id="cost">Time and cost</h2>
+<table>
+<tr><th>Step</th><th>Rough cost</th></tr>
+<tr><td><code>/wiki-init</code> (setup, catalog, system map, 2 pilots)</td><td>roughly the cost of 3–5 pages; more for very large repos (estimate)</td></tr>
+<tr><td>One page</td><td>50–150k tokens, depending on how many files it touches</td></tr>
+<tr><td>A full first build (3 repos, ~90 pages)</td><td>about 2–3M tokens (the EzPulze wiki)</td></tr>
+<tr><td>Weekly <code>/wiki-sync</code></td><td>small; grows with how much code changed</td></tr>
+</table>
+<p>Reading the wiki, the site and the scripts cost nothing.</p>
+
+<h2 id="files">Files in this template</h2>
+<table>
+<tr><th>Path</th><th>What</th></tr>
+<tr><td><code>index.html</code></td><td>This page. <code>/wiki-init</code> deletes it from a new project's wiki</td></tr>
+<tr><td><code>examples/</code></td><td>The Acme Shop sample: <code>site/</code> and the <code>wiki/</code> pages it was built from. Also deleted by <code>/wiki-init</code></td></tr>
+<tr><td><code>README.md</code></td><td>The same instructions in short</td></tr>
+<tr><td><code>CLAUDE.md</code>, <code>AGENTS.md</code></td><td>Rules for agents, with <code>{{placeholders}}</code> that <code>/wiki-init</code> fills in</td></tr>
+<tr><td><code>.claude/commands/</code></td><td>The five slash commands</td></tr>
+<tr><td><code>profiles/</code></td><td>Project types, and <code>stacks.md</code> for frameworks</td></tr>
+<tr><td><code>page-templates/</code></td><td>Skeletons for each page type, including the system map</td></tr>
+<tr><td><code>scripts/</code></td><td>Lint, status, and the site builders. Node only, no dependencies</td></tr>
+<tr><td><code>wiki/</code></td><td>Empty index, sync log and <code>raw/</code> folder for the new project</td></tr>
+<tr><td><code>wiki.config.json</code>, <code>repos.json</code>, <code>risks.json</code></td><td>Settings, repo paths and risk ratings, filled in per project</td></tr>
+</table>
+<div class="note">When you improve something in a project's wiki (a script, a profile, a stack row), copy it back here so the
+next project gets it. Keep this template free of project names, real code paths and secrets.</div>
+
+<h2 id="faq">FAQ</h2>
+<details><summary>Does Claude change my code?</summary>
+<p>No. The wiki rules forbid it. Possible bugs become <code>&gt; Risk:</code> notes for a person to check.</p></details>
+<details><summary>Is my code sent anywhere new?</summary>
+<p>Claude Code reads the code the same way it does when you use it for coding. Keep the wiki repo private: risk notes describe
+weaknesses. The never-read list keeps secrets and customer data out of both the prompts and the pages.</p></details>
+<details><summary>What if the wiki is wrong?</summary>
+<p>The code wins. Each page records the commit it was checked against; <code>/wiki-sync</code> and <code>/wiki-lint</code> find
+pages that have drifted. Anyone can fix a page, as long as the fix cites the code.</p></details>
+<details><summary>Can I use it without Claude?</summary>
+<p>Reading, yes: it's plain markdown and HTML. Writing and syncing pages is what Claude does; you can do it by hand, but that's
+the work the template exists to save.</p></details>
+<details><summary>We already have Confluence / Notion docs. Do we need this?</summary>
+<p>Those docs are for people and drift from the code. This wiki is checked against the code and kept current by agents. Put
+useful outside docs into <code>wiki/raw/</code> as evidence and let the wiki pages cite them.</p></details>
+<details><summary>Can one wiki cover several products?</summary>
+<p>Use one wiki per product (one set of repos released together). Shared libraries can have their own wiki with the
+<code>library</code> profile.</p></details>
+</main>
+</div>
+</body>
+</html>

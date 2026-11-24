@@ -1,0 +1,4 @@
+{
+ "_readme": "One entry per Risk note in wiki/. severity: C/H/M/L (U = not rated yet). Set severity, category and title by hand. Matching uses page + text; build-risk-register.mjs keeps the ID when a note is reworded. Entries with removed_on are no longer in the wiki (fixed or deleted); IDs are never reused.",
+ "risks": []
+}

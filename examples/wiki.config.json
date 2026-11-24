@@ -1,0 +1,8 @@
+{
+  "name": "Acme Shop",
+  "profile": "web-app",
+  "wikiRepoUrl": "",
+  "map": {
+    "page": "architecture/system-map.md"
+  }
+}

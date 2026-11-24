@@ -1,0 +1,6 @@
+{
+  "shop-web": "../shop-web",
+  "shop-api": "../shop-api",
+  "billing": "../billing",
+  "infra": "../infra"
+}

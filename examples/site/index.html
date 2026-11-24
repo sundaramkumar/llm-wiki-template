@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acme Shop Wiki</title>
+<style>
+:root{--bg:#f7f6f3;--surface:#fff;--text:#1d1d1b;--muted:#5f5e5a;--line:#e3e1db;--accent:#1f5f99;--accent-bg:#e7eff7;
+  --c:#b42318;--h:#c4320a;--m:#a15c07;--l:#3b6e3b;--u:#5f5e5a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--surface:#1f1f1d;--text:#ecebe7;--muted:#a4a29c;
+  --line:#34332f;--accent:#7fb2e5;--accent-bg:#1c2a38;--c:#f97066;--h:#fb8a4f;--m:#e3a948;--l:#8cc68c;--u:#a4a29c}}
+:root[data-theme="dark"]{--bg:#161615;--surface:#1f1f1d;--text:#ecebe7;--muted:#a4a29c;--line:#34332f;--accent:#7fb2e5;
+  --accent-bg:#1c2a38;--c:#f97066;--h:#fb8a4f;--m:#e3a948;--l:#8cc68c;--u:#a4a29c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:40px 16px 80px}
+h1{font-size:28px;margin:0 0 6px}
+.lead{color:var(--muted);margin:0 0 28px;max-width:680px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:34px 0 12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+.card{display:flex;flex-direction:column;gap:6px;padding:18px;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.card.first{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.when{font-size:12px;font-weight:600;color:var(--accent)}
+.ct{font-size:18px;font-weight:700}
+.cd{font-size:14px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.stat{padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.stat .n{font-size:26px;font-weight:700}
+.stat .l{font-size:13px;color:var(--muted)}
+.stat .x{font-size:13px;margin-top:6px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid currentColor;margin:2px 2px 0 0}
+.sC{color:var(--c)}.sH{color:var(--h)}.sM{color:var(--m)}.sL{color:var(--l)}.sU{color:var(--u)}
+table{border-collapse:collapse;font-size:13px;margin-top:6px}
+td{padding:1px 12px 1px 0}
+code{font:12px ui-monospace,Menlo,monospace}
+ul.links{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px 14px}
+ul.links a{font-weight:600;color:var(--accent);text-decoration:none}
+ul.links a:hover{text-decoration:underline}
+ul.links span{display:block;font-size:13px;color:var(--muted)}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Acme Shop developer wiki</h1>
+  <p class="lead">How the Acme Shop code works, written from the code and checked against it. New here? Read the guide, then open
+  the system map and follow its links into the wiki pages.</p>
+
+  <h2>Views</h2>
+  <div class="cards">
+<a class="card first" href="guide.html">
+  <span class="when">New here? Read first</span>
+  <span class="ct">How to use this wiki <span aria-hidden="true">→</span></span>
+  <span class="cd">What the wiki is, how to read a page, and how to use Claude Code to ask, build and sync pages.</span>
+</a>
+<a class="card" href="system-map.html">
+  <span class="when">Understand the system</span>
+  <span class="ct">System map <span aria-hidden="true">→</span></span>
+  <span class="cd">The whole system in one diagram, with clickable boxes, plus a numbered sequence diagram for every main flow.</span>
+</a>
+<a class="card" href="risk-register.html">
+  <span class="when">Before you change code</span>
+  <span class="ct">Risk register <span aria-hidden="true">→</span></span>
+  <span class="cd">Every possible bug or gap the wiki noticed, rated by severity. Filter by area, export to CSV.</span>
+</a>
+<a class="card" href="page-graph.html">
+  <span class="when">Maintaining the wiki</span>
+  <span class="ct">Page graph <span aria-hidden="true">→</span></span>
+  <span class="cd">How the wiki pages link to each other. Finds orphan pages and the pages everything depends on.</span>
+</a>
+  </div>
+
+
+  <h2>The wiki in numbers</h2>
+  <div class="stats">
+    <div class="stat"><div class="n">10</div><div class="l">wiki pages</div><div class="x">3 flow · 2 architecture · 1 decision · 1 incident · 1 module</div></div>
+    <div class="stat"><div class="n">5</div><div class="l">open risks</div><div class="x"><span class="pill sH">2 High</span> <span class="pill sM">2 Medium</span> <span class="pill sL">1 Low</span></div></div>
+    <div class="stat"><div class="n">2026-11-19</div><div class="l">last wiki update</div>
+      <table><tr><td>shop-web</td><td><code>4f1c2a9</code></td></tr><tr><td>shop-api</td><td><code>8b03d7e</code></td></tr><tr><td>billing</td><td><code>2e9a614</code></td></tr><tr><td>infra</td><td><code>c71d0b5</code></td></tr></table></div>
+  </div>
+
+  <h2>Read the wiki</h2>
+  <ul class="links">
+    <li><a href="../wiki/architecture/system-map.md" target="_blank" rel="noopener">System map (text)</a><span>Same diagram, with the boxes table and &quot;start here by task&quot;</span></li>
+    <li><a href="../wiki/index.md" target="_blank" rel="noopener">Wiki index</a><span>Every page, grouped by area</span></li>
+    <li><a href="../wiki/modules/catalog.md" target="_blank" rel="noopener">Module catalog</a><span>Every module in every repo, one line each</span></li>
+    <li><a href="../wiki/log.md" target="_blank" rel="noopener">Sync log</a><span>Which commit of each repo the wiki was last checked against</span></li>
+  </ul>
+
+  <footer>Generated by <code>node scripts/build-site.mjs</code>. Don't edit files in <code>site/</code> by hand.
+   The system map loads its diagram library from a CDN, so it needs internet access.</footer>
+</main>
+</body>
+</html>

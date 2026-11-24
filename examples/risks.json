@@ -1,0 +1,55 @@
+{
+ "_readme": "Example ratings for the Acme Shop sample.",
+ "risks": [
+  {
+   "id": 1,
+   "severity": "H",
+   "category": "Security",
+   "title": "Order export has no staff role check",
+   "page": "architecture/shop-api.md",
+   "section": "Request path",
+   "text": "`GET /admin/export` is in the admin controller but has no `@Roles('staff')` decorator, so any signed-in shopper may be able to download the order export (`shop-api:src/modules/admin/admin.controller.ts → exportOrders`). Untested.",
+   "added_on": "2026-11-19"
+  },
+  {
+   "id": 2,
+   "severity": "L",
+   "category": "Business logic",
+   "title": "Abandoned checkouts hold stock for up to a day",
+   "page": "flows/checkout.md",
+   "section": "Steps",
+   "text": "reserved stock is only released by a nightly job, so an abandoned checkout holds stock for up to a day. Untested.",
+   "added_on": "2026-11-19"
+  },
+  {
+   "id": 3,
+   "severity": "H",
+   "category": "Money",
+   "title": "Late webhook can mark a cancelled order paid",
+   "page": "flows/checkout.md",
+   "section": "Steps",
+   "text": "`markPaid` doesn't check the order is still `PENDING`; a late webhook for a cancelled order would set it back to `PAID`. Untested.",
+   "added_on": "2026-11-19"
+  },
+  {
+   "id": 4,
+   "severity": "M",
+   "category": "Reliability",
+   "title": "Failed fulfilment jobs raise no alert",
+   "page": "flows/order-fulfilment.md",
+   "section": "Steps",
+   "text": "a parked job is only visible in the Redis dashboard; nothing alerts staff, so a paid order can sit unshipped. Untested.",
+   "added_on": "2026-11-19"
+  },
+  {
+   "id": 5,
+   "severity": "M",
+   "category": "Security",
+   "title": "No rate limit on sign-in",
+   "page": "flows/sign-in.md",
+   "section": "Steps",
+   "text": "there is no rate limit on `/auth/sign-in`, so passwords can be guessed quickly. Untested.",
+   "added_on": "2026-11-19"
+  }
+ ]
+}

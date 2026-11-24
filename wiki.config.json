@@ -1,0 +1,28 @@
+{
+  "name": "{{PROJECT_NAME}}",
+  "profile": "{{PROFILE}}",
+  "wikiRepoUrl": "",
+  "map": {
+    "page": "architecture/system-map.md"
+  },
+  "status": {
+    "areaDepth": 3,
+    "ignore": [
+      "(^|/)(test|tests|__tests__|spec|e2e|fixtures|mocks?)/",
+      "\\.(test|spec)\\.",
+      "(^|/)docs?/",
+      "\\.md$",
+      "(package-lock\\.json|yarn\\.lock|pnpm-lock\\.yaml|composer\\.lock|Gemfile\\.lock|poetry\\.lock|go\\.sum|Cargo\\.lock)$",
+      "\\.(png|jpe?g|gif|svg|ico|webp|woff2?|ttf|lock)$",
+      "(^|/)(dist|build|out|target|bin|obj|generated|vendor|node_modules)/",
+      "(^|/)(styles?|tailwind|i18n|locales?|images|assets|fonts|icons)/"
+    ]
+  },
+  "graph": {
+    "hubs": [
+      "index.md",
+      "log.md",
+      "modules/catalog.md"
+    ]
+  }
+}

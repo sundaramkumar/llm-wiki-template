@@ -1,0 +1,11 @@
+.DS_Store
+node_modules/
+*.log
+.env*
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+credentials*.json
+.obsidian/

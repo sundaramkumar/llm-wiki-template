@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acme Shop System Map</title>
+<style>
+:root{
+  --bg:#f7f6f3; --surface:#ffffff; --text:#1d1d1b; --muted:#5f5e5a; --line:#e3e1db; --accent:#1f5f99;
+  --accent-bg:#e7eff7; --code-bg:#f1efe9;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161615; --surface:#1f1f1d; --text:#ecebe7; --muted:#a4a29c; --line:#34332f; --accent:#7fb2e5;
+    --accent-bg:#1c2a38; --code-bg:#2a2a27;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161615; --surface:#1f1f1d; --text:#ecebe7; --muted:#a4a29c; --line:#34332f; --accent:#7fb2e5;
+  --accent-bg:#1c2a38; --code-bg:#2a2a27;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1180px;margin:0 auto;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+h1{font-size:19px;margin:0}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav a{font-size:14px;font-weight:600;color:var(--accent);text-decoration:none;padding:5px 10px;border-radius:6px}
+nav a:hover,nav a.on{background:var(--accent-bg)}
+.sub{color:var(--muted);font-size:13px}
+main{max-width:1180px;margin:0 auto;padding:18px 16px 80px}
+section{margin-bottom:44px}
+h2{font-size:22px;margin:8px 0 12px}
+.md h2{font-size:18px;margin:28px 0 10px}
+.md table{border-collapse:collapse;width:100%;background:var(--surface);border:1px solid var(--line);font-size:14px;margin:8px 0 14px;display:block;overflow-x:auto;width:max-content;max-width:100%}
+.md th,.md td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.md th{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+a{color:var(--accent)}
+.home{font-size:13px;font-weight:600;color:var(--accent);text-decoration:none}.home:hover{text-decoration:underline}
+code{font:13px ui-monospace,Menlo,monospace;background:var(--code-bg);padding:1px 4px;border-radius:4px}
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;margin:10px 0}
+.diagram svg{max-width:100%;height:auto}
+.hint{font-size:13px;color:var(--muted);margin:-4px 0 10px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+input[type=search]{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text);flex:1;min-width:200px;max-width:420px}
+.flow{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:12px 0}
+.flow > summary{cursor:pointer;padding:12px 16px;list-style:none;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.flow > summary::-webkit-details-marker{display:none}
+.flow > summary::before{content:"▸";color:var(--muted)}
+.flow[open] > summary::before{content:"▾"}
+.flow .t{font-weight:700;font-size:16px}
+.flow .s{color:var(--muted);font-size:13px}
+.flow .body{padding:0 16px 14px}
+.flow .intro{margin:0 0 6px}
+.flow .diagram{border:0;padding:0}
+.err{color:#b42318;font-size:13px;white-space:pre-wrap}
+button.btn{font:inherit;font-size:13px;font-weight:600;padding:6px 11px;border:1px solid var(--accent);color:var(--accent);background:transparent;border-radius:6px;cursor:pointer}
+button.btn:hover{background:var(--accent-bg)}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <a class="home" href="index.html">← Wiki home</a>
+  <h1>Acme Shop System Map</h1>
+  <nav><a href="#system">System</a><a href="#flows">Flows at a glance</a></nav>
+  <span class="sub" id="sub"></span>
+</div></header>
+<main>
+  <section id="system"><h2 id="systitle"></h2><p class="hint">Click a box to open its wiki page.</p><div class="md" id="map"></div></section>
+  <section id="flows">
+    <h2>Flows at a glance</h2>
+    <p class="hint">Who calls whom, in order. Open a flow to see its diagram; the title links to the full page.</p>
+    <div class="tools">
+      <input type="search" id="q" placeholder="Filter flows…" aria-label="Filter flows">
+      <button class="btn" type="button" id="all">Open all</button>
+      <button class="btn" type="button" id="none">Close all</button>
+    </div>
+    <div id="list"></div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+const DATA = {"name":"Acme Shop","built":"2026-11-19","map":{"title":"System map (start here)","url":"../wiki/architecture/system-map.md","md":"\nAcme Shop sells furniture online. Shoppers use the storefront, staff use the admin pages in the same Next.js app,\nand both talk to shop-api. Payments go through a separate Python billing service and an outside payment provider.\n\n```mermaid\nflowchart TB\n  subgraph who[\" Who uses it \"]\n    direction LR\n    shopper([Shopper])\n    staff([Store staff])\n  end\n  subgraph ext[\" Outside services \"]\n    direction LR\n    pay[Payment provider]\n    courier[Courier API]\n  end\n  subgraph apps[\" Apps \"]\n    web[shop-web\u003cbr/>Next.js]\n  end\n  subgraph back[\" Backends \"]\n    direction LR\n    api[shop-api\u003cbr/>NestJS]\n    billing[billing\u003cbr/>Python FastAPI]\n  end\n  subgraph bg[\" Background work \"]\n    direction LR\n    queue[(Redis\u003cbr/>BullMQ jobs)]\n    workers[shop-api workers\u003cbr/>fulfilment, emails]\n  end\n  subgraph data[\" Data \"]\n    direction LR\n    db[(Postgres\u003cbr/>orders, products)]\n    bdb[(Postgres\u003cbr/>invoices)]\n  end\n  shopper --> web\n  staff --> web\n  web -->|HTTP + cookie| api\n  api -->|charge| billing\n  billing --> pay\n  pay -->|webhooks| billing\n  billing -->|payment result| api\n  api --> db\n  billing --> bdb\n  api -->|enqueue| queue\n  queue -->|jobs| workers\n  workers --> courier\n  workers --> db\n  click web \"../wiki/modules/catalog.md\"\n  click api \"../wiki/architecture/shop-api.md\"\n  click billing \"../wiki/decisions/0001-separate-billing-service.md\"\n  click queue \"../wiki/flows/order-fulfilment.md\"\n  click workers \"../wiki/flows/order-fulfilment.md\"\n  click pay \"../wiki/flows/checkout.md\"\n```\n\n## The boxes\n\n| Box | What it is | Read |\n|---|---|---|\n| shop-web | Storefront and admin pages, one Next.js app | [Sign-in](../wiki/flows/sign-in.md) |\n| shop-api | The main API: products, carts, orders, users | [shop-api architecture](../wiki/architecture/shop-api.md) |\n| billing | Charges, refunds and invoices; the only code that talks to the payment provider | [0001](../wiki/decisions/0001-separate-billing-service.md) |\n| Redis + workers | Background jobs: fulfilment, emails, stock sync | [Order fulfilment](../wiki/flows/order-fulfilment.md) |\n| infra | Terraform for all of the above on AWS (not drawn) | [Module catalog](../wiki/modules/catalog.md) |\n\n## Start here by task\n\n| I need to… | Read, in this order |\n|---|---|\n| Understand the system | This page → [shop-api architecture](../wiki/architecture/shop-api.md) |\n| Fix \"customer was charged twice\" | [Checkout](../wiki/flows/checkout.md) → [the March incident](../wiki/incidents/2026-03-duplicate-charges.md) |\n| Fix \"order paid but never shipped\" | [Order fulfilment](../wiki/flows/order-fulfilment.md) |\n| Add an API endpoint | [shop-api architecture → How to add a module](../wiki/architecture/shop-api.md) |\n\n## Main flows at a glance\n\n- [Sign-in](../wiki/flows/sign-in.md): password check, session cookie, guards\n- [Checkout](../wiki/flows/checkout.md): cart to paid order\n- [Order fulfilment](../wiki/flows/order-fulfilment.md): paid order to shipped parcel\n"},"flows":[{"id":"flows/sign-in.md","title":"Sign-in","sub":"","url":"../wiki/flows/sign-in.md","intro":"How shoppers and staff sign in. Both use the same form and the same session cookie; staff pages also check the role.","mermaid":"sequenceDiagram\n  autonumber\n  participant W as shop-web\n  participant A as shop-api\n  participant DB as Postgres\n  W->>A: POST /auth/sign-in (email, password)\n  A->>DB: find user by email\n  A->>A: compare password hash (argon2)\n  A->>DB: create session row, 14 days\n  A-->>W: Set-Cookie sid (httpOnly)\n  W->>A: later requests send the cookie\n  A->>A: SessionGuard loads the user, RolesGuard checks staff routes\n"},{"id":"flows/order-fulfilment.md","title":"Order fulfilment","sub":"","url":"../wiki/flows/order-fulfilment.md","intro":"From a paid order to a shipped parcel, through the `fulfilment` job queue.","mermaid":"sequenceDiagram\n  autonumber\n  participant A as shop-api\n  participant Q as Redis queue fulfilment\n  participant W as fulfilment worker\n  participant C as Courier API\n  participant DB as Postgres\n  A->>Q: enqueue job (order id)\n  Q->>W: job\n  W->>C: create shipment\n  C-->>W: tracking number\n  W->>DB: order status SHIPPED, save tracking\n  W->>Q: enqueue email shipping confirmation\n  Note over W,C: on failure, retry 5 times with backoff, then the job is parked\n"},{"id":"flows/checkout.md","title":"Checkout","sub":"","url":"../wiki/flows/checkout.md","intro":"From a full cart to a paid order. shop-api owns the order; the billing service owns the money.","mermaid":"sequenceDiagram\n  autonumber\n  participant W as shop-web\n  participant A as shop-api\n  participant B as billing\n  participant P as Payment provider\n  W->>A: POST /orders (cart id)\n  A->>A: reserve stock, order status PENDING\n  A->>B: POST /charges (order id, amount)\n  B->>P: create payment intent\n  P-->>W: card form, 3-D Secure\n  P->>B: webhook payment succeeded\n  B->>B: mark invoice paid (once per payment id)\n  B->>A: POST /internal/orders/id/paid\n  A->>A: order status PAID, enqueue fulfilment\n"}]};
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+$("sub").textContent = DATA.flows.length + " flows · built " + DATA.built;
+
+if (!window.marked || !window.mermaid) {
+  document.querySelector("main").insertAdjacentHTML("afterbegin", '<p class="err">Could not load the diagram libraries (no internet?). The same diagrams are in the wiki pages and render on GitHub and in Obsidian.</p>');
+}
+mermaid.initialize({ startOnLoad: false, securityLevel: "loose", theme: dark ? "dark" : "default",
+  sequence: { showSequenceNumbers: true, useMaxWidth: true }, flowchart: { useMaxWidth: true, htmlLabels: true } });
+
+let n = 0;
+async function draw(el, code) {
+  try {
+    const { svg, bindFunctions } = await mermaid.render("m" + (n++), code);
+    el.innerHTML = svg; if (bindFunctions) bindFunctions(el);
+    el.querySelectorAll("a").forEach((a) => a.setAttribute("target", "_blank"));
+  } catch (e) {
+    el.innerHTML = '<p class="err">Diagram error: ' + esc(e.message || e) + "</p><pre>" + esc(code) + "</pre>";
+  }
+}
+
+// System map: markdown, with mermaid blocks turned into diagrams
+if (DATA.map) {
+  $("systitle").innerHTML = '<a href="' + DATA.map.url + '" target="_blank" rel="noopener">' + esc(DATA.map.title) + "</a>";
+  $("map").innerHTML = marked.parse(DATA.map.md);
+  $("map").querySelectorAll("a").forEach((a) => { a.target = "_blank"; a.rel = "noopener"; });
+  $("map").querySelectorAll("pre > code.language-mermaid").forEach((c) => {
+    const d = document.createElement("div"); d.className = "diagram"; c.parentElement.replaceWith(d); draw(d, c.textContent);
+  });
+} else {
+  $("systitle").textContent = "System map";
+  $("map").innerHTML = '<p class="err">No system map page yet (architecture/system-map.md).</p>';
+}
+
+// Flows: one collapsible card each; the diagram is drawn the first time it opens
+$("list").innerHTML = DATA.flows.map((f, i) =>
+  '<details class="flow" data-i="' + i + '"' + (i < 2 ? " open" : "") + '><summary><a class="t" href="' + f.url + '" target="_blank" rel="noopener">' +
+  esc(f.title) + "</a>" + (f.sub ? '<span class="s">' + esc(f.sub) + "</span>" : "") +
+  '</summary><div class="body"><div class="intro">' + marked.parseInline(f.intro) + '</div><div class="diagram"></div></div></details>').join("");
+document.querySelectorAll(".flow").forEach((d) => {
+  const show = () => { if (d.open && !d.dataset.drawn) { d.dataset.drawn = 1; draw(d.querySelector(".diagram"), DATA.flows[+d.dataset.i].mermaid); } };
+  d.addEventListener("toggle", show); show();
+  d.querySelectorAll(".intro a").forEach((a) => { a.target = "_blank"; a.rel = "noopener"; });
+});
+$("q").addEventListener("input", () => {
+  const q = $("q").value.toLowerCase();
+  document.querySelectorAll(".flow").forEach((d) => { const f = DATA.flows[+d.dataset.i];
+    d.style.display = !q || (f.title + " " + f.intro + " " + f.mermaid).toLowerCase().includes(q) ? "" : "none"; });
+});
+$("all").onclick = () => document.querySelectorAll(".flow").forEach((d) => { if (d.style.display !== "none") d.open = true; });
+$("none").onclick = () => document.querySelectorAll(".flow").forEach((d) => d.open = false);
+const navs = document.querySelectorAll("nav a");
+addEventListener("scroll", () => { const y = $("flows").getBoundingClientRect().top < 120;
+  navs[0].classList.toggle("on", !y); navs[1].classList.toggle("on", y); }, { passive: true });
+</script>
+</body>
+</html>

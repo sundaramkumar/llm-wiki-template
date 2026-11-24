@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__NAME__ Risk Register</title>
+<style>
+:root{
+  --bg:#f7f6f3; --surface:#ffffff; --text:#1d1d1b; --muted:#5f5e5a; --line:#e3e1db; --hover:#f1efe9;
+  --accent:#1f5f99; --accent-bg:#e7eff7; --code-bg:#f1efe9;
+  --crit:#9b1c1c; --crit-bg:#fbe4e4; --high:#b4530f; --high-bg:#fdebd8;
+  --med:#8a6d00; --med-bg:#fbf3d0; --low:#4b5563; --low-bg:#eceae5;
+  --ok:#2e7d4f; --ok-bg:#e8f3ec;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161615; --surface:#1f1f1d; --text:#ecebe7; --muted:#a4a29c; --line:#34332f; --hover:#262624;
+    --accent:#7fb2e5; --accent-bg:#1c2a38; --code-bg:#2a2a27;
+    --crit:#f19a9a; --crit-bg:#3a1d1d; --high:#f0b27a; --high-bg:#3a2715; --med:#e6cf6b; --med-bg:#332c12;
+    --low:#b7b4ad; --low-bg:#2b2a27; --ok:#78c495; --ok-bg:#1e2e24;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161615; --surface:#1f1f1d; --text:#ecebe7; --muted:#a4a29c; --line:#34332f; --hover:#262624;
+  --accent:#7fb2e5; --accent-bg:#1c2a38; --code-bg:#2a2a27;
+  --crit:#f19a9a; --crit-bg:#3a1d1d; --high:#f0b27a; --high-bg:#3a2715; --med:#e6cf6b; --med-bg:#332c12;
+  --low:#b7b4ad; --low-bg:#2b2a27; --ok:#78c495; --ok-bg:#1e2e24;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1180px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:26px;margin:0 0 4px}
+h2{font-size:18px;margin:34px 0 10px}
+p{margin:0 0 8px}
+.sub{color:var(--muted)}
+.warn{background:var(--crit-bg);color:var(--text);border-left:4px solid var(--crit);padding:10px 14px;border-radius:6px;margin:14px 0}
+.note{background:var(--accent-bg);border-left:4px solid var(--accent);padding:10px 14px;border-radius:6px;margin:14px 0}
+.tiles{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:16px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.tile:hover{background:var(--hover)}
+.tile.on{outline:2px solid var(--accent)}
+.tile .n{font-size:28px;font-weight:700;line-height:1.1}
+.tile .l{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.bars{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.bar{display:grid;grid-template-columns:120px 1fr 34px;gap:10px;align-items:center;margin:5px 0;cursor:pointer}
+.bar:hover .lbl{color:var(--accent)}
+.track{height:12px;background:var(--hover);border-radius:6px;overflow:hidden;display:flex}
+.seg{height:100%}
+.bar .cnt{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.controls{position:sticky;top:0;z-index:4;background:var(--bg);padding:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid var(--line)}
+input[type=search],select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text)}
+input[type=search]{flex:1;min-width:180px}
+button.btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border:1px solid var(--accent);color:var(--accent);background:transparent;border-radius:6px;cursor:pointer}
+button.btn:hover{background:var(--accent-bg)}
+.shown{color:var(--muted);font-size:13px;margin-left:auto}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);margin-top:10px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--hover)}
+td.id{color:var(--muted);font-variant-numeric:tabular-nums;width:44px}
+td.t{font-weight:600}
+.sev{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.C{background:var(--crit-bg);color:var(--crit)} .H{background:var(--high-bg);color:var(--high)}
+.M{background:var(--med-bg);color:var(--med)} .L{background:var(--low-bg);color:var(--low)}
+.U{background:var(--accent-bg);color:var(--accent)}
+.cat{font-size:12px;color:var(--muted);white-space:nowrap}
+tr.detail td{background:var(--hover);padding:12px 16px 14px 54px}
+tr.detail .txt{max-width:900px}
+tr.detail .meta{font-size:12px;color:var(--muted);margin-top:8px}
+code{font:12px ui-monospace,Menlo,monospace;background:var(--code-bg);padding:1px 4px;border-radius:4px;word-break:break-word}
+a{color:var(--accent)}
+.home{font-size:13px;font-weight:600;color:var(--accent);text-decoration:none}.home:hover{text-decoration:underline}
+td select{padding:4px 6px;font-size:12px}
+.st-done{color:var(--ok)}
+ol li{margin:4px 0}
+@media (max-width:640px){ .hide-sm{display:none} tr.detail td{padding-left:16px} }
+</style>
+</head>
+<body>
+<main>
+  <a class="home" href="index.html">← Wiki home</a>
+  <h1>__NAME__ Risk Register</h1>
+  <p class="sub">__COUNT__ possible issues noted in the developer wiki · as of __DATE__</p>
+
+  <div class="warn"><strong>Internal only.</strong> This page describes possible security weaknesses in detail. Don't post it publicly or share it outside the team.</div>
+  <div class="note"><strong>These are not confirmed bugs.</strong> Each one comes from reading the code, not from a test or from production. Some will be false alarms. Severity is a first estimate to set the order of work, so adjust it as you check each one. Click any row to see the full detail and its wiki page.</div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <h2>By category</h2>
+  <div class="bars" id="bars"></div>
+
+  <h2>All risks</h2>
+  <div class="controls">
+    <input type="search" id="q" placeholder="Search title, detail, area…" aria-label="Search">
+    <select id="fsev" aria-label="Severity"><option value="">All severities</option><option value="C">Critical</option><option value="H">High</option><option value="M">Medium</option><option value="L">Low</option><option value="U">Not rated</option></select>
+    <select id="fcat" aria-label="Category"><option value="">All categories</option></select>
+    <select id="farea" aria-label="Area"><option value="">All areas</option></select>
+    <select id="fst" aria-label="Status"><option value="">Any status</option></select>
+    <button class="btn" id="reset" type="button">Reset</button>
+    <button class="btn" id="csv" type="button">Export CSV</button>
+    <span class="shown" id="shown"></span>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>#</th><th>Severity</th><th>Risk</th><th class="hide-sm">Category</th><th class="hide-sm">Area</th><th>Status</th></tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+
+  <h2>How to work through this list</h2>
+  <ol>
+    <li><strong>Start with Critical, then High</strong> (security and money first). For each one, open the wiki page and the cited code.</li>
+    <li><strong>Confirm it</strong> by reading the code path or writing a small test. Set the status to <em>Confirmed</em> or <em>False alarm</em>.</li>
+    <li>For confirmed items, create a ticket and set the status to <em>Ticket created</em>. When it's fixed, set it to <em>Fixed</em> and run <code>/wiki-sync</code> so the wiki page drops the Risk note.</li>
+    <li>Use <strong>Export CSV</strong> to import the list into Jira or share it with the team.</li>
+  </ol>
+  <p class="sub">Statuses are saved in this browser only (local storage). Use Export CSV to share progress with others.</p>
+</main>
+
+<script>
+const DATA = __DATA__;
+const SEV = {C:"Critical",H:"High",M:"Medium",L:"Low",U:"Not rated"};
+const SEVS = ["C","H","M","L"].concat(DATA.some(d => d.sev === "U") ? ["U"] : []);
+const ORDER = {U:0,C:1,H:2,M:3,L:4};
+const STATUSES = ["Not checked","Confirmed","False alarm","Ticket created","Fixed"];
+const KEY = "__SLUG__-risk-status-v1";
+let status = {};
+try { status = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { status = {}; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(status)); } catch (e) {} };
+const st = (id) => status[id] || "Not checked";
+
+const esc = (s) => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const md = (s) => esc(s)
+  .replace(/`([^`]+)`/g, "<code>$1</code>")
+  .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+  .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1");
+
+const $ = (id) => document.getElementById(id);
+const cats = [...new Set(DATA.map(d => d.cat))].sort();
+const areas = [...new Set(DATA.map(d => d.area))].sort();
+cats.forEach(c => $("fcat").insertAdjacentHTML("beforeend", `<option>${esc(c)}</option>`));
+areas.forEach(a => $("farea").insertAdjacentHTML("beforeend", `<option>${esc(a)}</option>`));
+STATUSES.forEach(s => $("fst").insertAdjacentHTML("beforeend", `<option>${s}</option>`));
+
+function tiles(){
+  const cnt = {C:0,H:0,M:0,L:0,U:0}; DATA.forEach(d => cnt[d.sev]++);
+  const done = DATA.filter(d => st(d.id) !== "Not checked").length;
+  $("tiles").innerHTML = SEVS.map(s =>
+    `<button type="button" class="tile${$("fsev").value===s?" on":""}" data-s="${s}"><div class="l"><span class="sev ${s}">${SEV[s]}</span></div><div class="n">${cnt[s]}</div></button>`).join("")
+    + `<div class="tile" style="cursor:default"><div class="l">Checked so far</div><div class="n">${done}<span class="sub" style="font-size:14px"> / ${DATA.length}</span></div></div>`;
+  document.querySelectorAll(".tile[data-s]").forEach(b => b.onclick = () => { $("fsev").value = $("fsev").value === b.dataset.s ? "" : b.dataset.s; render(); });
+}
+function bars(){
+  const max = Math.max(...cats.map(c => DATA.filter(d => d.cat === c).length));
+  const rows = cats.map(c => {
+    const items = DATA.filter(d => d.cat === c);
+    const segs = SEVS.map(s => { const n = items.filter(d => d.sev === s).length;
+      return n ? `<div class="seg" title="${SEV[s]}: ${n}" style="width:${n/max*100}%;background:var(--${{C:"crit",H:"high",M:"med",L:"low",U:"accent"}[s]})"></div>` : ""; }).join("");
+    return { c, n: items.length, html: `<div class="bar" data-c="${esc(c)}"><span class="lbl">${esc(c)}</span><div class="track">${segs}</div><span class="cnt">${items.length}</span></div>` };
+  }).sort((a,b) => b.n - a.n);
+  $("bars").innerHTML = rows.map(r => r.html).join("") +
+    `<div class="legend"><span><i style="background:var(--crit)"></i>Critical</span><span><i style="background:var(--high)"></i>High</span><span><i style="background:var(--med)"></i>Medium</span><span><i style="background:var(--low)"></i>Low</span><span>Click a category to filter</span></div>`;
+  document.querySelectorAll(".bar").forEach(b => b.onclick = () => { $("fcat").value = $("fcat").value === b.dataset.c ? "" : b.dataset.c; render(); });
+}
+function filtered(){
+  const q = $("q").value.trim().toLowerCase();
+  return DATA.filter(d =>
+    (!$("fsev").value || d.sev === $("fsev").value) &&
+    (!$("fcat").value || d.cat === $("fcat").value) &&
+    (!$("farea").value || d.area === $("farea").value) &&
+    (!$("fst").value || st(d.id) === $("fst").value) &&
+    (!q || (d.title + " " + d.text + " " + d.area + " " + d.cat).toLowerCase().includes(q))
+  ).sort((a,b) => ORDER[a.sev] - ORDER[b.sev] || a.id - b.id);
+}
+const open = new Set();
+function render(){
+  tiles();
+  const rows = filtered();
+  $("shown").textContent = `${rows.length} of ${DATA.length} shown`;
+  $("tb").innerHTML = rows.map(d => {
+    const opts = STATUSES.map(s => `<option${s===st(d.id)?" selected":""}>${s}</option>`).join("");
+    const main = `<tr class="row" data-id="${d.id}"><td class="id">${d.id}</td><td><span class="sev ${d.sev}">${SEV[d.sev]}</span></td><td class="t">${esc(d.title)}</td><td class="cat hide-sm">${esc(d.cat)}</td><td class="cat hide-sm">${esc(d.area)}</td><td><select data-id="${d.id}" aria-label="Status for risk ${d.id}" class="${st(d.id)==="Fixed"||st(d.id)==="False alarm"?"st-done":""}">${opts}</select></td></tr>`;
+    const det = open.has(d.id) ? `<tr class="detail"><td colspan="6"><div class="txt">${md(d.text)}</div><div class="meta">Wiki: <a href="../wiki/${d.page}">${esc(d.page)}</a>${d.section ? " · section “" + esc(d.section) + "”" : ""}${d.also ? " · also noted in " + esc(d.also) : ""}</div></td></tr>` : "";
+    return main + det;
+  }).join("") || `<tr><td colspan="6" class="sub">No risks match these filters.</td></tr>`;
+  document.querySelectorAll("tr.row").forEach(tr => tr.onclick = (e) => {
+    if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
+    const id = +tr.dataset.id; open.has(id) ? open.delete(id) : open.add(id); render();
+  });
+  document.querySelectorAll("td select").forEach(s => s.onchange = () => { status[s.dataset.id] = s.value; save(); render(); });
+}
+["q","fsev","fcat","farea","fst"].forEach(id => $(id).addEventListener("input", render));
+$("reset").onclick = () => { ["q","fsev","fcat","farea","fst"].forEach(id => $(id).value = ""); open.clear(); render(); };
+$("csv").onclick = () => {
+  const q = (s) => '"' + String(s).replace(/"/g,'""') + '"';
+  const plain = (s) => s.replace(/`/g,"").replace(/\*\*/g,"").replace(/\[([^\]]+)\]\([^)]+\)/g,"$1");
+  const lines = [["ID","Severity","Category","Area","Title","Detail","Wiki page","Status"].map(q).join(",")]
+    .concat(filtered().map(d => [d.id, SEV[d.sev], d.cat, d.area, d.title, plain(d.text), "wiki/" + d.page, st(d.id)].map(q).join(",")));
+  const blob = new Blob([lines.join("\n")], {type:"text/csv"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "__SLUG__-risks.csv"; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+bars(); render();
+</script>
+</body>
+</html>
